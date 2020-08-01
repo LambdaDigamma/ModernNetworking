@@ -10,7 +10,7 @@ public class API {
     
     public init(loader: HTTPLoader = URLSessionLoader()) {
         
-        let modifier = ModifyRequest { request in
+        let modifier = ModifyRequestLoader { request in
             
             var copy = request
             
@@ -28,8 +28,8 @@ public class API {
             
         }
         
-        let resetGuard = ResetGuard()
-        let applyEnvironment = ApplyEnvironment(environment: .general)
+        let resetGuard = ResetGuardLoader()
+        let applyEnvironment = ApplyEnvironmentLoader(environment: .general)
         
         if let newLoader = resetGuard --> applyEnvironment --> modifier --> loader {
             self.loader = newLoader
@@ -41,7 +41,7 @@ public class API {
     
     public func sendRequest(_ request: HTTPRequest) {
         
-        loader.load(request: request) { (result) in
+        loader.load(request) { (result) in
             result.decoding([ToDo].self, completion: { (result) in
                 print(try? result.get())
             })

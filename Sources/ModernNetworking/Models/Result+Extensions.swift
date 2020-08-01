@@ -18,7 +18,7 @@ public extension HTTPResult {
             let result = self.flatMap { response -> Result<M, HTTPError> in
                 
                 guard let data = response.body else {
-                    return .failure(HTTPError(code: .invalidResponse, request: request, response: response, underlyingError: nil))
+                    return .failure(HTTPError(.invalidResponse, request, response, nil))
                 }
                 
                 do {
@@ -27,12 +27,12 @@ public extension HTTPResult {
                     return .success(model)
                 } catch let e as DecodingError {
                     
-                    let error = HTTPError(code: .decodingError, request: request, response: response, underlyingError: e)
+                    let error = HTTPError(.decodingError, request, response, e)
                     
                     return .failure(error)
                     
                 } catch {
-                    return .failure(HTTPError(code: .unknown, request: request, response: response, underlyingError: error))
+                    return .failure(HTTPError(.unknown, request, response, error))
                 }
             }
             

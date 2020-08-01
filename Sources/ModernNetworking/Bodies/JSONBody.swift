@@ -1,26 +1,34 @@
-//
-//  JSONBody.swift
-//  24doors
-//
-//  Created by Lennart Fischer on 17.07.20.
-//  Copyright © 2020 LambdaDigamma. All rights reserved.
-//
-
 import Foundation
 
 public struct JSONBody: HTTPBody {
-    
+
     public let isEmpty: Bool = false
     public var additionalHeaders = [
         "Content-Type": "application/json; charset=utf-8"
     ]
-    
-    private let encoder: () throws -> Data
-    
-    public init<T: Encodable>(_ value: T, encoder: JSONEncoder = JSONEncoder()) {
-        self.encoder = { try encoder.encode(value) }
+
+    public init <T: Encodable> (_ value: T, encoder: JSONEncoder = JSONEncoder()) {
+        self._encode = { try encoder.encode(value) }
     }
-    
-    public func encode() throws -> Data { return try self.encoder() }
-    
+
+    public func encode() throws -> Data {
+        try _encode()
+    }
+
+    private let _encode: () throws -> Data
+
+}
+
+#if canImport(Combine)
+import Combine
+#endif
+
+@available(OSX 10.15, *)
+@available(iOS 13.0, *)
+extension JSONBody {
+
+    public init <T: Encodable, E: TopLevelEncoder> (_ value: T, encoder: E) where E.Output == Data {
+        self._encode = { try encoder.encode(value) }
+    }
+
 }
