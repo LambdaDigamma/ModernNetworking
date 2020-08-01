@@ -33,6 +33,7 @@ public struct HTTPError: Error {
         case decodingError
         case resourceNotFound
         case noData
+        case resetInProgress
         case unknown            // we have no idea what the problem is
     }
     

@@ -29,11 +29,3 @@ public struct ServerEnvironment: HTTPRequestOption {
     }
     
 }
-
-extension ServerEnvironment {
-    
-    public static let development = ServerEnvironment(host: "development.24doors.app", pathPrefix: "/api")
-    public static let staging = ServerEnvironment(host: "staging.24doors.app", pathPrefix: "/api")
-    public static let production = ServerEnvironment(host: "24doors.app", pathPrefix: "/api")
-    
-}

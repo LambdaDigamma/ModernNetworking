@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
 public enum Resource<T> {
     
     case loading
@@ -17,7 +16,6 @@ public enum Resource<T> {
     
 }
 
-@available(iOS 13.0, *)
 extension Resource {
     
     var loading: Bool {
@@ -54,6 +52,7 @@ extension Resource {
     
 }
 
+@available(OSX 10.15, *)
 @available(iOS 13.0, *)
 public extension Resource {
     

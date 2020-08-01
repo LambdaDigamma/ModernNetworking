@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 
+@available(OSX 10.15, *)
 @available(iOS 13.0, *)
 public class ModifyRequest: HTTPLoader {
     
@@ -24,8 +25,8 @@ public class ModifyRequest: HTTPLoader {
         super.load(request: modifiedRequest, completion: completion)
     }
     
-    public override func load<T>(request: HTTPRequest) -> AnyPublisher<T, HTTPError> where T : Model {
-        let modifiedRequest = modifier(request)
-        return super.load(request: modifiedRequest) // TODO: Check whether this is evil!
-    }
+//    public override func load<T>(request: HTTPRequest) -> AnyPublisher<T, HTTPError> where T : Model {
+//        let modifiedRequest = modifier(request)
+//        return super.load(request: modifiedRequest) // TODO: Check whether this is evil!
+//    }
 }

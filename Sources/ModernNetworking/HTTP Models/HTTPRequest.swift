@@ -10,6 +10,8 @@ import Foundation
 
 public struct HTTPRequest {
     
+    public var id = UUID()
+    
     private var urlComponents = URLComponents()
     public var method: HTTPMethod = .get
     public var headers: [String: String] = [:]

@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 
+@available(OSX 10.15, *)
 @available(iOS 13.0, *)
 public class PrintLoader: HTTPLoader {
     
@@ -20,8 +21,8 @@ public class PrintLoader: HTTPLoader {
         })
     }
     
-    public override func load<T>(request: HTTPRequest) -> AnyPublisher<T, HTTPError> where T : Model {
-        return super.load(request: request) // TODO: Check whether this is evil!
-    }
+//    public override func load<T>(request: HTTPRequest) -> AnyPublisher<T, HTTPError> where T : Model {
+//        return super.load(request: request) // TODO: Check whether this is evil!
+//    }
     
 }

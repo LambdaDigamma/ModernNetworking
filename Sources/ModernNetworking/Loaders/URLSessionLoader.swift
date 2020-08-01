@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 
+@available(OSX 10.15, *)
 @available(iOS 13.0, *)
 public class URLSessionLoader: HTTPLoader {
     
@@ -64,7 +65,7 @@ public class URLSessionLoader: HTTPLoader {
         
     }
     
-    public override func load<T>(request: HTTPRequest) -> AnyPublisher<T, HTTPError> where T : Model {
+    public /*override*/ func load<T>(request: HTTPRequest) -> AnyPublisher<T, HTTPError> where T : Model {
         
         do {
             
