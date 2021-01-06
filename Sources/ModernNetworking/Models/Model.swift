@@ -1,9 +1,8 @@
 //
 //  Model.swift
-//  24doors
 //
-//  Created by Lennart Fischer on 19.07.20.
-//  Copyright © 2020 LambdaDigamma. All rights reserved.
+//
+//  Created by Lennart Fischer on 06.01.21.
 //
 
 import Foundation

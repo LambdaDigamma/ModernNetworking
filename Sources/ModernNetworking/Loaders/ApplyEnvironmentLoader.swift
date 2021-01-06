@@ -1,4 +1,12 @@
+//
+//  ApplyEnvironmentLoader.swift
+//
+//
+//  Created by Lennart Fischer on 06.01.21.
+//
+
 import Foundation
+
 
 public class ApplyEnvironmentLoader: HTTPLoader {
 
@@ -9,7 +17,8 @@ public class ApplyEnvironmentLoader: HTTPLoader {
 
     private let environment: ServerEnvironment
 
-    override public func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
+    override public func load(_ request: HTTPRequest,
+                              completion: @escaping HTTPResultHandler) {
 
         var copy = request
 

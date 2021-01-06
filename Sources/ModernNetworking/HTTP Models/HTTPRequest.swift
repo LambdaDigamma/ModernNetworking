@@ -1,4 +1,12 @@
+//
+//  HTTPRequest.swift
+//
+//
+//  Created by Lennart Fischer on 06.01.21.
+//
+
 import Foundation
+
 
 public struct HTTPRequest {
 
@@ -10,7 +18,9 @@ public struct HTTPRequest {
         urlComponents.scheme = "https"
     }
     
-    public init(path: String, body: HTTPBody = EmptyBody(), headers: [String: String] = [:]) {
+    public init(path: String,
+                body: HTTPBody = EmptyBody(),
+                headers: [String: String] = [:]) {
         urlComponents.scheme = "https"
         self.path = path
         self.body = body
@@ -62,7 +72,9 @@ extension HTTPRequest {
     public subscript <O: HTTPRequestOption> (option type: O.Type) -> O.Value {
         get {
             let id = ObjectIdentifier(type)
-            guard let value = options[id] as? O.Value else { return type.defaultOptionValue }
+            guard let value = options[id] as? O.Value else {
+                return type.defaultOptionValue
+            }
             return value
         }
         set {

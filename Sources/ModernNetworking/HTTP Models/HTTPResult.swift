@@ -1,4 +1,12 @@
+//
+//  HTTPResult.swift
+//
+//
+//  Created by Lennart Fischer on 06.01.21.
+//
+
 import Foundation
+
 
 public typealias HTTPResult = Result<HTTPResponse, HTTPError>
 

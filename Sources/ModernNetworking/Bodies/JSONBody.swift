@@ -1,4 +1,12 @@
+//
+//  HTTPLoader.swift
+//
+//
+//  Created by Lennart Fischer on 06.01.21.
+//
+
 import Foundation
+
 
 public struct JSONBody: HTTPBody {
 
@@ -27,8 +35,11 @@ import Combine
 @available(iOS 13.0, *)
 extension JSONBody {
 
-    public init <T: Encodable, E: TopLevelEncoder> (_ value: T, encoder: E) where E.Output == Data {
+    public init<T: Encodable, E: TopLevelEncoder>(_ value: T, encoder: E)
+        where E.Output == Data {
+        
         self._encode = { try encoder.encode(value) }
+        
     }
 
 }

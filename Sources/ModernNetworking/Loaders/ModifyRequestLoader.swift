@@ -1,4 +1,12 @@
+//
+//  ModifyRequestLoader.swift
+//
+//
+//  Created by Lennart Fischer on 06.01.21.
+//
+
 import Foundation
+
 
 public class ModifyRequestLoader: HTTPLoader {
 
@@ -7,7 +15,8 @@ public class ModifyRequestLoader: HTTPLoader {
         super.init()
     }
 
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
+    public override func load(_ request: HTTPRequest,
+                              completion: @escaping HTTPResultHandler) {
         let modifiedRequest = requestModifier(request)
         super.load(modifiedRequest, completion: completion)
     }

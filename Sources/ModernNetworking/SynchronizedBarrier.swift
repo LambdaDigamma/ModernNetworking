@@ -1,9 +1,17 @@
+//
+//  SynchronizedBarrier.swift
+//
+//
+//  Created by Lennart Fischer on 06.01.21.
+//
+
+
 import Foundation
 import Dispatch
 
 // Shamelessly appropriated from https://github.com/basememara/SynchronizedGeneric
 
-public struct SynchronizedBarrier <Value> {
+public struct SynchronizedBarrier<Value> {
 
     public init(_ value: Value) {
         self._value = value

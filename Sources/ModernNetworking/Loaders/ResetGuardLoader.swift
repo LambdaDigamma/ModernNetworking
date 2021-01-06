@@ -1,4 +1,12 @@
+//
+//  ResetGuardLoader.swift
+//
+//
+//  Created by Lennart Fischer on 06.01.21.
+//
+
 import Dispatch
+
 
 public class ResetGuardLoader: HTTPLoader {
 

@@ -1,7 +1,14 @@
+//
+//  StatusCodeMockLoader.swift
+//
+//
+//  Created by Lennart Fischer on 06.01.21.
+//
+
 import Foundation
 
-// A mock loader that always creates a successful response with a given status code.
 
+/// A mock loader that always creates a successful response with a given status code.
 public class StatusCodeMockLoader: MockLoader {
 
     public let statusCode: HTTPStatusCode
@@ -10,7 +17,8 @@ public class StatusCodeMockLoader: MockLoader {
         self.statusCode = statusCode
     }
 
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
+    public override func load(_ request: HTTPRequest,
+                              completion: @escaping HTTPResultHandler) {
 
         let urlResponse = HTTPURLResponse(
             url: request.url!,
@@ -18,6 +26,8 @@ public class StatusCodeMockLoader: MockLoader {
             httpVersion: "1.1",
             headerFields: nil
         )
+        
+        
         let response = HTTPResponse(request, urlResponse!)
         completion(.success(response))
 
