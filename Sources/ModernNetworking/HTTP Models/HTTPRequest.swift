@@ -10,9 +10,10 @@ public struct HTTPRequest {
         urlComponents.scheme = "https"
     }
     
-    public init(path: String) {
+    public init(path: String, body: HTTPBody = EmptyBody(), headers: [String: String] = [:]) {
         urlComponents.scheme = "https"
         self.path = path
+        self.body = body
     }
 
     private var urlComponents = URLComponents()
