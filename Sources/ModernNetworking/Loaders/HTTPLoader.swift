@@ -1,3 +1,4 @@
+import Foundation
 import Dispatch
 
 public typealias HTTPResultHandler = (HTTPResult) -> Void
@@ -44,18 +45,3 @@ extension HTTPLoader {
 }
 
 extension String: Error {}
-
-// MARK: - Custom operator API
-
-precedencegroup LoaderChainingPrecedence {
-    higherThan: NilCoalescingPrecedence
-    associativity: right
-}
-
-infix operator --> : LoaderChainingPrecedence
-
-@discardableResult
-public func --> (lhs: HTTPLoader?, rhs: HTTPLoader?) -> HTTPLoader? {
-    lhs?.nextLoader = rhs
-    return lhs ?? rhs
-}

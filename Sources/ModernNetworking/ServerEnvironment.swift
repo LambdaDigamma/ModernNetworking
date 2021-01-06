@@ -2,6 +2,7 @@ import Foundation
 
 public struct ServerEnvironment: HTTPRequestOption {
 
+    public var scheme: String = "https"
     public var host: String
     public var pathPrefix: String
     public var headers: [String: String]
@@ -10,6 +11,7 @@ public struct ServerEnvironment: HTTPRequestOption {
     public static let defaultOptionValue: ServerEnvironment? = nil
 
     public init(
+        scheme: String = "https",
         host: String,
         pathPrefix: String = "/",
         headers: [String: String] = [:],
@@ -19,6 +21,7 @@ public struct ServerEnvironment: HTTPRequestOption {
         // make sure the pathPrefix starts with a /
         let prefix = pathPrefix.hasPrefix("/") ? "" : "/"
 
+        self.scheme = scheme
         self.host = host
         self.pathPrefix = prefix + pathPrefix
         self.headers = headers

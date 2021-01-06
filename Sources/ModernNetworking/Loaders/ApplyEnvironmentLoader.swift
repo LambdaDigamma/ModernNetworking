@@ -15,6 +15,8 @@ public class ApplyEnvironmentLoader: HTTPLoader {
 
         let requestEnvironment = request.serverEnvironment ?? environment
 
+        copy.scheme = requestEnvironment.scheme
+        
         if copy.host?.isEmpty ?? true {
             copy.host = requestEnvironment.host
         }
@@ -23,9 +25,10 @@ public class ApplyEnvironmentLoader: HTTPLoader {
             // TODO: apply the environment.pathPrefix | is this done?
             copy.path = requestEnvironment.pathPrefix + copy.path
         }
-
-        // TODO: apply the query items from requestEnvironment
-
+        
+        // TODO: apply the query items from requestEnvironment | is this right?
+        copy.queryItems.append(contentsOf: requestEnvironment.query)
+        
         for (header, value) in requestEnvironment.headers {
             copy.headers.updateValue(value, forKey: header)
         }

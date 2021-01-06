@@ -9,6 +9,11 @@ public struct HTTPRequest {
     public init() {
         urlComponents.scheme = "https"
     }
+    
+    public init(path: String) {
+        urlComponents.scheme = "https"
+        self.path = path
+    }
 
     private var urlComponents = URLComponents()
     private var options = [ObjectIdentifier: Any]()
@@ -24,7 +29,13 @@ extension HTTPRequest {
     }
 
     public var scheme: String {
-        urlComponents.scheme ?? "https"
+        get {
+            urlComponents.scheme ?? "https"
+        }
+        set {
+            urlComponents.scheme = newValue
+        }
+        
     }
 
     public var host: String? {
@@ -40,6 +51,11 @@ extension HTTPRequest {
     public var serverEnvironment: ServerEnvironment? {
         get { self[option: ServerEnvironment.self] }
         set { self[option: ServerEnvironment.self] = newValue }
+    }
+    
+    public var queryItems: [URLQueryItem] {
+        get { urlComponents.queryItems ?? [] }
+        set { urlComponents.queryItems = newValue }
     }
 
     public subscript <O: HTTPRequestOption> (option type: O.Type) -> O.Value {
