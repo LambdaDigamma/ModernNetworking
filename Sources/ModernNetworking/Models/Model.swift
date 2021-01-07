@@ -33,9 +33,17 @@ public extension Model {
     }
     
     static var encoder: JSONEncoder {
+        
         let encoder = JSONEncoder()
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z"
+        
         encoder.keyEncodingStrategy = .convertToSnakeCase
+        encoder.dateEncodingStrategy = .formatted(formatter)
+        
         return encoder
+        
     }
     
 }
