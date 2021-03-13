@@ -32,7 +32,7 @@ public class ApplyEnvironmentLoader: HTTPLoader {
 
         if copy.path.hasPrefix("/") == false {
             // TODO: apply the environment.pathPrefix | is this done?
-            copy.path = requestEnvironment.pathPrefix + copy.path
+            copy.path = requestEnvironment.pathPrefix + "/" + copy.path
         }
         
         // TODO: apply the query items from requestEnvironment | is this right?

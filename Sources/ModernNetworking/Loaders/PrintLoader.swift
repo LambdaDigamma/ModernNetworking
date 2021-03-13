@@ -16,6 +16,17 @@ public class PrintLoader: HTTPLoader {
         super.load(request, completion: { result in
             print("Loaded: \(request)")
             print("Reeceived result: \(result)")
+            
+            switch result {
+                case .success(let response):
+                    guard let data = response.body else { return }
+                    print(String(decoding: data, as: UTF8.self))
+                case .failure(let error):
+                    print("Failed with error:")
+                    print(error)
+                    print(error.underlyingError ?? "")
+            }
+            
             completion(result)
         })
         
