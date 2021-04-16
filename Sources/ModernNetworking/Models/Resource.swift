@@ -14,7 +14,7 @@ public struct Resource<T: Model>: Codable {
     
 }
 
-extension Resource {
-    static var decoder: JSONDecoder { T.decoder }
-    static var encoder: JSONEncoder { T.encoder }
+extension Resource: Model {
+    public static var decoder: JSONDecoder { T.decoder }
+    public static var encoder: JSONEncoder { T.encoder }
 }

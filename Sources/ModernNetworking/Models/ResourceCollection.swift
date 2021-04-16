@@ -92,7 +92,7 @@ public struct PageLink: Codable {
     public let active: Bool
 }
 
-public extension ResourceCollection {
-    static var decoder: JSONDecoder { T.decoder }
-    static var encoder: JSONEncoder { T.encoder }
+extension ResourceCollection: Model {
+    public static var decoder: JSONDecoder { T.decoder }
+    public static var encoder: JSONEncoder { T.encoder }
 }
