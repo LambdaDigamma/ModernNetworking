@@ -55,16 +55,16 @@ public struct ResourceMeta: Codable {
     public let to: Int?
     public let total: Int
     
-//    public enum CodingKeys: String, CodingKey {
-//        case currentPage = "current_page"
-//        case from = "from"
-//        case lastPage = "last_page"
-//        case links = "links"
-//        case path = "path"
-//        case perPage = "per_page"
-//        case to = "to"
-//        case total = "total"
-//    }
+    public enum CodingKeys: String, CodingKey {
+        case currentPage = "current_page"
+        case from = "from"
+        case lastPage = "last_page"
+        case links = "links"
+        case path = "path"
+        case perPage = "per_page"
+        case to = "to"
+        case total = "total"
+    }
     
     public init(currentPage: Int? = nil,
                 from: Int? = nil,
