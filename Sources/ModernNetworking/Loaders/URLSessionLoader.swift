@@ -75,14 +75,14 @@ extension URLSessionLoader {
 
         var httpResponse: HTTPResponse?
 
-        if let r = response as? HTTPURLResponse {
-            httpResponse = HTTPResponse(request, r, data)
+        if let response = response as? HTTPURLResponse {
+            httpResponse = HTTPResponse(request, response, data)
         }
 
         // an URL error
-        if let e = error as? URLError {
+        if let error = error as? URLError {
             let code: HTTPError.Code
-            switch e.code {
+            switch error.code {
 
                 case .badURL:
                     code = .invalidRequest(.invalidURL)
@@ -95,19 +95,19 @@ extension URLSessionLoader {
                     code = .unknown
 
             }
-            let httpError = HTTPError(code, request, httpResponse, e)
+            let httpError = HTTPError(code, request, httpResponse, error)
             return .failure(httpError)
         }
 
         // an error, but not a URL error
-        else if let e = error {
-            let httpError = HTTPError(.unknown, request, httpResponse, e)
+        else if let error = error {
+            let httpError = HTTPError(.unknown, request, httpResponse, error)
             return .failure(httpError)
         }
 
         // no error, and an HTTPURLResponse
-        else if let r = httpResponse {
-            return .success(r)
+        else if let response = httpResponse {
+            return .success(response)
         }
 
         // not an error, but also not an HTTPURLResponse

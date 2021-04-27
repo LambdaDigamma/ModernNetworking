@@ -18,12 +18,17 @@ public struct HTTPRequest {
         urlComponents.scheme = "https"
     }
     
-    public init(path: String,
-                body: HTTPBody = EmptyBody(),
-                headers: [String: String] = [:]) {
+    public init(
+        method: HTTPMethod = .get,
+        path: String,
+        body: HTTPBody = EmptyBody(),
+        headers: [String: String] = [:]
+    ) {
         urlComponents.scheme = "https"
+        self.method = method
         self.path = path
         self.body = body
+        self.headers = headers
     }
 
     private var urlComponents = URLComponents()

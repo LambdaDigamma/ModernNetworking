@@ -59,8 +59,8 @@ extension ServerEnvironment {
 
 let api = API()
 
-var r = HTTPRequest()
-r.path = "/todos"
+var req = HTTPRequest()
+req.path = "/todos"
 
-api.sendRequest(r)
+api.sendRequest(req)
 

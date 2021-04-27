@@ -24,9 +24,9 @@ public extension HTTPResult {
                     let decoder = M.decoder
                     let model = try decoder.decode(M.self, from: data)
                     return .success(model)
-                } catch let e as DecodingError {
+                } catch let error as DecodingError {
                     
-                    let error = HTTPError(.decodingError, request, response, e)
+                    let error = HTTPError(.decodingError, request, response, error)
                     
                     return .failure(error)
                     

@@ -64,14 +64,14 @@ public extension UIResource {
     /**
      Transform a `Resource<T>` to a `Resource<S>`
      */
-    func transform<S>(_ t: @escaping (T) -> S) -> UIResource<S> {
+    func transform<S>(_ transform: @escaping (T) -> S) -> UIResource<S> {
         switch self {
             case .loading:
                 return .loading
             case .error(let error):
                 return .error(error)
             case .success(let value):
-                return .success(t(value))
+                return .success(transform(value))
         }
     }
     
