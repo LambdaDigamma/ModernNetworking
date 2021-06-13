@@ -24,6 +24,7 @@ public extension Model {
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z"
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
         
         decoder.keyDecodingStrategy = .useDefaultKeys
         decoder.dateDecodingStrategy = .formatted(formatter)
@@ -38,6 +39,7 @@ public extension Model {
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z"
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
         
         encoder.keyEncodingStrategy = .useDefaultKeys
         encoder.dateEncodingStrategy = .formatted(formatter)
