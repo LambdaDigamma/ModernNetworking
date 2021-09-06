@@ -9,7 +9,7 @@ import Foundation
 
 
 public struct JSONBody: HTTPBody {
-
+    
     public let isEmpty: Bool = false
     public var additionalHeaders = [
         "Content-Type": "application/json; charset=utf-8"
@@ -25,6 +25,14 @@ public struct JSONBody: HTTPBody {
 
     private let _encode: () throws -> Data
 
+    /// Attention: use this only during debugging and testing
+    public static func == (lhs: JSONBody, rhs: JSONBody) -> Bool {
+        let lhsData = (try? lhs._encode()) ?? Data()
+        let rhsData = (try? rhs._encode()) ?? Data()
+        
+        return lhsData == rhsData
+    }
+    
 }
 
 #if canImport(Combine)

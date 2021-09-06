@@ -27,7 +27,6 @@ public extension HTTPResult {
                 } catch let error as DecodingError {
                     
                     let error = HTTPError(.decodingError, request, response, error)
-                    
                     return .failure(error)
                     
                 } catch {

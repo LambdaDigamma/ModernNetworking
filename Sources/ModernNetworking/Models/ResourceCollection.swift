@@ -23,8 +23,8 @@ public struct ResourceCollection<T: Model>: Codable {
 
 public struct ResourceLinks: Codable {
     
-    public let first: String
-    public let last: String
+    public let first: String?
+    public let last: String?
     public let previous: String?
     public let next: String?
     
@@ -35,7 +35,7 @@ public struct ResourceLinks: Codable {
         case next = "next"
     }
     
-    public init(first: String = "", last: String = "", previous: String? = nil, next: String? = nil) {
+    public init(first: String? = nil, last: String? = nil, previous: String? = nil, next: String? = nil) {
         self.first = first
         self.last = last
         self.previous = previous
@@ -48,12 +48,12 @@ public struct ResourceMeta: Codable {
     
     public let currentPage: Int?
     public let from: Int?
-    public let lastPage: Int
+    public let lastPage: Int?
     public let links: [PageLink]
-    public let path: String
-    public let perPage: Int
+    public let path: String?
+    public let perPage: Int?
     public let to: Int?
-    public let total: Int
+    public let total: Int?
     
     public enum CodingKeys: String, CodingKey {
         case currentPage = "current_page"
@@ -66,14 +66,16 @@ public struct ResourceMeta: Codable {
         case total = "total"
     }
     
-    public init(currentPage: Int? = nil,
-                from: Int? = nil,
-                lastPage: Int = 1,
-                links: [PageLink] = [],
-                path: String = "",
-                perPage: Int = 10,
-                to: Int? = 1,
-                total: Int = 10) {
+    public init(
+        currentPage: Int? = nil,
+        from: Int? = nil,
+        lastPage: Int = 1,
+        links: [PageLink] = [],
+        path: String = "",
+        perPage: Int = 10,
+        to: Int? = 1,
+        total: Int? = 10
+    ) {
         self.currentPage = currentPage
         self.from = from
         self.lastPage = lastPage

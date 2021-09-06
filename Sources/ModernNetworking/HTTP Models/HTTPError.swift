@@ -8,8 +8,8 @@
 import Foundation
 
 
-public struct HTTPError: Error {
-
+public struct HTTPError: Error, Equatable {
+    
     public let code: Code
     public let request: HTTPRequest
     public let response: HTTPResponse?
@@ -27,7 +27,7 @@ public struct HTTPError: Error {
         self.underlyingError = underlyingError
     }
 
-    public enum Code {
+    public enum Code: Equatable {
         
         /// The HTTPRequest could not be turned into a URLRequest.
         case invalidRequest(InvalidRequest)
@@ -55,10 +55,18 @@ public struct HTTPError: Error {
         case unknown
     }
 
-    public enum InvalidRequest {
+    public enum InvalidRequest: Equatable {
         case invalidURL
         case invalidBody
         case unknown
     }
 
+    /// Attention: use this only for debugging and testing.
+    /// Only the code, response and underlying errors are being compared.
+    public static func == (lhs: HTTPError, rhs: HTTPError) -> Bool {
+        return lhs.code == rhs.code
+            && lhs.response == rhs.response
+            && lhs.underlyingError?.localizedDescription == rhs.underlyingError?.localizedDescription
+    }
+    
 }

@@ -8,8 +8,8 @@
 import Foundation
 
 
-public struct FormBody: HTTPBody {
-
+public struct FormBody: HTTPBody, Equatable {
+    
     public var isEmpty: Bool { values.isEmpty }
     public let additionalHeaders = [
         "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
@@ -33,6 +33,11 @@ public struct FormBody: HTTPBody {
     }
 
     private let values: [URLQueryItem]
+    
+    public static func == (lhs: FormBody, rhs: FormBody) -> Bool {
+        return lhs.additionalHeaders == rhs.additionalHeaders
+            && lhs.values == rhs.values
+    }
 
 }
 

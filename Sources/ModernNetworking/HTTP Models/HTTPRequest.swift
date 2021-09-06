@@ -8,8 +8,8 @@
 import Foundation
 
 
-public struct HTTPRequest {
-
+public struct HTTPRequest: Equatable {
+    
     public var method: HTTPMethod = .get
     public var headers: [String: String] = [:]
     public var body: HTTPBody = EmptyBody()
@@ -34,6 +34,14 @@ public struct HTTPRequest {
     private var urlComponents = URLComponents()
     private var options = [ObjectIdentifier: Any]()
 
+    /// Attention: use this only for debugging and testing.
+    /// The request body is not being compared.
+    public static func == (lhs: HTTPRequest, rhs: HTTPRequest) -> Bool {
+        return lhs.method == rhs.method
+            && lhs.headers == rhs.headers
+            && lhs.urlComponents == rhs.urlComponents
+    }
+    
 }
 
 // MARK: - Convenience API

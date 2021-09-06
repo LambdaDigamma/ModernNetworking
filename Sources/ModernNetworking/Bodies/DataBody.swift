@@ -8,8 +8,8 @@
 import Foundation
 
 
-public struct DataBody: HTTPBody {
-
+public struct DataBody: HTTPBody, Equatable {
+    
     private let data: Data
     
     public var isEmpty: Bool { data.isEmpty }
@@ -22,4 +22,8 @@ public struct DataBody: HTTPBody {
 
     public func encode() throws -> Data { data }
 
+    public static func == (lhs: DataBody, rhs: DataBody) -> Bool {
+        return lhs.data == rhs.data
+    }
+    
 }

@@ -11,7 +11,7 @@ import Foundation
 /// The HTTP spec does not define the allowed HTTP methods.
 /// Technically this could be any verb.
 /// The most common methods are defined as static members.
-public struct HTTPMethod: Hashable {
+public struct HTTPMethod: Hashable, Equatable {
 
     /// Represents a `GET` HTTP request.
     public static let get = HTTPMethod("GET")

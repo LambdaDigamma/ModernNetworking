@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct EmptyBody: HTTPBody {
+public struct EmptyBody: HTTPBody, Equatable {
 
     public let isEmpty = true
 
@@ -16,4 +16,7 @@ public struct EmptyBody: HTTPBody {
 
     public func encode() throws -> Data { Data() }
 
+    public static func == (lhs: EmptyBody, rhs: EmptyBody) -> Bool {
+        return true
+    }
 }
