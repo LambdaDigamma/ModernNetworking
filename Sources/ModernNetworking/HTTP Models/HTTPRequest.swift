@@ -22,13 +22,15 @@ public struct HTTPRequest: Equatable {
         method: HTTPMethod = .get,
         path: String,
         body: HTTPBody = EmptyBody(),
-        headers: [String: String] = [:]
+        headers: [String: String] = [:],
+        queryItems: [URLQueryItem] = []
     ) {
         urlComponents.scheme = "https"
         self.method = method
         self.path = path
         self.body = body
         self.headers = headers
+        self.queryItems = queryItems
     }
 
     private var urlComponents = URLComponents()
