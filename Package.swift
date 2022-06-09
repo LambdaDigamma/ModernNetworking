@@ -12,12 +12,13 @@ let package = Package(
         ),
     ],
     dependencies: [
-        
+        .package(url: "https://github.com/apple/swift-docc-plugin.git", from: "1.0.0"),
     ],
     targets: [
         .target(
             name: "ModernNetworking",
-            dependencies: []
+            dependencies: [
+            ]
         ),
         .testTarget(
             name: "ModernNetworkingTests",
