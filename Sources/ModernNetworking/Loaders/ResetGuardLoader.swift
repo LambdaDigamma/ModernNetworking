@@ -10,6 +10,8 @@ import Dispatch
 
 public class ResetGuardLoader: HTTPLoader {
 
+    private var isResetting = SynchronizedBarrier(false)
+    
     public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
 
         if isResetting.value == false {
@@ -35,6 +37,15 @@ public class ResetGuardLoader: HTTPLoader {
 
     }
 
-    private var isResetting = SynchronizedBarrier(false)
-
+    public override func load(_ request: HTTPRequest) async -> HTTPResult {
+        
+        if isResetting.value == false {
+            return await super.load(request)
+        } else {
+            let error = HTTPError(.resetInProgress, request)
+            return .failure(error)
+        }
+        
+    }
+    
 }

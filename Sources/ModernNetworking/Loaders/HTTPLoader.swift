@@ -33,6 +33,15 @@ open class HTTPLoader {
 
     }
 
+    open func load(_ request: HTTPRequest) async -> HTTPResult {
+        if let next = nextLoader {
+            return await next.load(request)
+        } else {
+            let error = HTTPError(.cannotConnect, request, nil, "no HTTPLoader available")
+            return .failure(error)
+        }
+    }
+    
     open func reset(with group: DispatchGroup) {
         nextLoader?.reset(with: group)
     }

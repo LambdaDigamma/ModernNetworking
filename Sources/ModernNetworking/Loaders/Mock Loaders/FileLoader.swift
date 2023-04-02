@@ -17,17 +17,21 @@ public class FileLoader: MockLoader {
     private let fileExtension: String
     private let bundle: Bundle
     
+    public var fixtureRequest: HTTPRequest?
+    
     public init(
         statusCode: HTTPStatusCode = .ok,
         resource: String,
         fileExtension: String,
-        bundle: Bundle
+        bundle: Bundle,
+        fixtureRequest: HTTPRequest? = nil
     ) {
         self.logger = Logger(subsystem: "com.lambdadigamma.modernnetworking", category: "FileLoader")
         self.statusCode = statusCode
         self.resource = resource
         self.fileExtension = fileExtension
         self.bundle = bundle
+        self.fixtureRequest = fixtureRequest
     }
     
     public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
@@ -53,12 +57,47 @@ public class FileLoader: MockLoader {
             }
             
         } else {
+            
             self.logger.error("Could not find a file for the provided information.")
         }
         
         let response = HTTPResponse(request, urlResponse!, data)
         
         completion(.success(response))
+        
+    }
+    
+    public override func load(_ request: HTTPRequest) async -> HTTPResult {
+        
+        let urlResponse = HTTPURLResponse(
+            url: request.url!,
+            statusCode: statusCode.value,
+            httpVersion: "1.1",
+            headerFields: [:]
+        )
+        
+        var data = Data()
+        
+        if let path = bundle.path(forResource: resource, ofType: fileExtension) {
+            
+            do {
+                
+                let content = try String(contentsOfFile: path)
+                data = content.data(using: .utf8) ?? Data()
+                
+            } catch {
+                self.logger.error("An error occured: \(error.localizedDescription)")
+            }
+            
+        } else {
+            
+            self.logger.error("Could not find a file for the provided information.")
+            
+        }
+        
+        let response = HTTPResponse(request, urlResponse!, data)
+        
+        return .success(response)
         
     }
     

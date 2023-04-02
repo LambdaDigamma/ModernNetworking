@@ -17,8 +17,10 @@ public class ApplyEnvironmentLoader: HTTPLoader {
 
     private let environment: ServerEnvironment
 
-    override public func load(_ request: HTTPRequest,
-                              completion: @escaping HTTPResultHandler) {
+    override public func load(
+        _ request: HTTPRequest,
+        completion: @escaping HTTPResultHandler
+    ) {
 
         var copy = request
 
@@ -46,4 +48,31 @@ public class ApplyEnvironmentLoader: HTTPLoader {
 
     }
 
+    override public func load(
+        _ request: HTTPRequest
+    ) async -> HTTPResult {
+        
+        var copy = request
+        
+        let requestEnvironment = request.serverEnvironment ?? environment
+        
+        copy.scheme = requestEnvironment.scheme
+        
+        if copy.host?.isEmpty ?? true {
+            copy.host = requestEnvironment.host
+        }
+        
+        if copy.path.hasPrefix("/") == false {
+            copy.path = requestEnvironment.pathPrefix + "/" + copy.path
+        }
+        
+        copy.queryItems.append(contentsOf: requestEnvironment.query)
+        
+        for (header, value) in requestEnvironment.headers {
+            copy.headers.updateValue(value, forKey: header)
+        }
+        
+        return await super.load(copy)
+    }
+    
 }

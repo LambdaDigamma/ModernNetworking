@@ -14,6 +14,8 @@ public protocol EntityTagCaching {
     
     func loadEntityTag(for url: URL) -> String?
     
+    func store(entityTag: String, for url: URL) async throws
+    
 }
 
 public class BasicEntityTagCache: EntityTagCaching {
@@ -109,6 +111,29 @@ public class EntityTagLoader: HTTPLoader {
             completion(result)
         })
         
+    }
+    
+    public override func load(_ request: HTTPRequest) async -> HTTPResult {
+        
+        var copy = request
+        
+        if let url = copy.url, let entityTag = loadEntityTag(for: url) {
+            copy.headers["If-None-Match"] = entityTag
+        }
+        
+        let result = await super.load(copy)
+        
+        switch result {
+            case .success(let response):
+                if let entityTag = response.headers["Etag"] as? String, let url = result.request.url {
+                    self.store(entityTag: entityTag, for: url)
+                }
+                break
+            case .failure(_):
+                break
+        }
+        
+        return result
     }
     
     private func store(entityTag: String, for url: URL) {

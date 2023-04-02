@@ -48,4 +48,34 @@ public extension HTTPResult {
         
     }
     
+    func decoding<M: Model>(_ model: M.Type) async throws -> M {
+        
+        guard let data = response?.body else {
+            throw HTTPError(.invalidResponse, request, response, nil)
+        }
+        
+        do {
+            
+            let decoder = M.decoder
+            let model = try decoder.decode(M.self, from: data)
+            
+            return model
+            
+        } catch let error as DecodingError {
+            
+            if #available(iOS 14.0, *) {
+                Logging.logger.info("Decoding failed: \(error.localizedDescription, privacy: .public) \(error.errorDescription ?? "", privacy: .public) \(error.failureReason ?? "", privacy: .public)")
+                Logging.logger.info("")
+                print(error)
+                print(error.failureReason ?? "")
+            }
+            
+            throw HTTPError(.decodingError, request, response, error)
+            
+        } catch {
+            throw HTTPError(.unknown, request, response, error)
+        }
+        
+    }
+    
 }

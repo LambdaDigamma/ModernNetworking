@@ -18,4 +18,12 @@ open class MockLoader: HTTPLoader {
 
     }
 
+    open override func load(_ request: HTTPRequest) async -> HTTPResult {
+        
+        let error = HTTPError(.cannotConnect, request, nil, "base mock handler")
+        
+        return .failure(error)
+        
+    }
+    
 }

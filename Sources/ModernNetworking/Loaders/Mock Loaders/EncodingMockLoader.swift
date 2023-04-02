@@ -59,4 +59,19 @@ public class EncodingMockLoader: MockLoader {
         
     }
     
+    public override func load(_ request: HTTPRequest) async -> HTTPResult {
+    
+        let urlResponse = HTTPURLResponse(
+            url: request.url!,
+            statusCode: statusCode.value,
+            httpVersion: "1.1",
+            headerFields: headers
+        )
+        
+        let response = HTTPResponse(request, urlResponse!, data)
+        
+        return .success(response)
+        
+    }
+    
 }

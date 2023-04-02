@@ -17,6 +17,10 @@ public final class URLSessionLoader: HTTPLoader {
     public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
         _load(request, completion: completion)
     }
+    
+    public override func load(_ request: HTTPRequest) async -> HTTPResult {
+        await _load(request)
+    }
 
     private let session: URLSession
 
@@ -57,6 +61,12 @@ extension URLSessionLoader {
 
         }
 
+        if let cachedResponse = session.configuration.urlCache?.cachedResponse(for: urlRequest) {
+            print("Cached response")
+            print(cachedResponse.response)
+            print(String(data: cachedResponse.data, encoding: .utf8)!)
+        }
+        
         let dataTask = session.dataTask(with: urlRequest) { (data, response, error) in
             let result = self.makeHTTPResult(request, data, response, error)
             completion(result)
@@ -66,6 +76,52 @@ extension URLSessionLoader {
 
     }
 
+    private func _load(_ request: HTTPRequest) async -> HTTPResult {
+        
+        guard let url = request.url else {
+            let error = HTTPError(.invalidRequest(.invalidURL), request)
+            return .failure(error)
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = request.method.name
+        
+        // add custom HTTP headers from the request
+        for (header, value) in request.headers {
+            urlRequest.addValue(value, forHTTPHeaderField: header)
+        }
+        
+        if request.body.isEmpty == false {
+            
+            // add custom HTTP headers from the body
+            for (header, value) in request.body.additionalHeaders {
+                urlRequest.addValue(value, forHTTPHeaderField: header)
+            }
+            
+            do { urlRequest.httpBody = try request.body.encode() } catch {
+                let error = HTTPError(.invalidRequest(.invalidBody), request)
+                return .failure(error)
+            }
+            
+        }
+        
+        if let cachedResponse = session.configuration.urlCache?.cachedResponse(for: urlRequest) {
+            print("Cached response")
+            print(cachedResponse.response)
+            print(String(data: cachedResponse.data, encoding: .utf8)!)
+        }
+        
+        do {
+            let (data, response) = try await session.data(for: urlRequest)
+            
+            return self.makeHTTPResult(request, data, response, nil)
+            
+        } catch {
+            return self.makeHTTPResult(request, nil, nil, error)
+        }
+        
+    }
+    
     private func makeHTTPResult(
         _ request: HTTPRequest,
         _ data: Data?,

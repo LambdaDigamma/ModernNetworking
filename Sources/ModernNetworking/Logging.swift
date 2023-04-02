@@ -12,6 +12,9 @@ import OSLog
 public class Logging {
     
     @available(iOS 14.0, *)
-    public static let logger: Logger = Logger(subsystem: "com.lambdadigamma.modernnetworking", category: "ModernNetworking")
+    public static let logger: Logger = Logger(
+        subsystem: "com.lambdadigamma.modernnetworking",
+        category: "ModernNetworking"
+    )
     
 }

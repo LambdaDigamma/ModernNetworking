@@ -32,4 +32,24 @@ public class PrintLoader: HTTPLoader {
         
     }
     
+    public override func load(_ request: HTTPRequest) async -> HTTPResult {
+        
+        print("Loading \(request)")
+        let result = await super.load(request)
+        print("Loaded: \(request)")
+        print("Received result: \(result)")
+        
+        switch result {
+            case .success(let response):
+                guard let data = response.body else { break }
+                print(String(decoding: data, as: UTF8.self))
+            case .failure(let error):
+                print("Failed with error:")
+                print(error)
+                print(error.underlyingError ?? "")
+        }
+        
+        return result
+    }
+    
 }

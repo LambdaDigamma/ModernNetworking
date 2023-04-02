@@ -11,6 +11,7 @@ import Foundation
 public typealias HTTPHandler = (HTTPResult) -> Void
 public typealias MockHandler = (HTTPRequest, HTTPHandler) -> Void
 
+/// Does not yet support async
 public class SequentialMockLoader: MockLoader {
 
     private var nextHandlers = Array<MockHandler>()

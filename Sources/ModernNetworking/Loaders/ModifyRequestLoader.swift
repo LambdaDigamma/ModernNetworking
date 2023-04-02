@@ -10,17 +10,24 @@ import Foundation
 
 public class ModifyRequestLoader: HTTPLoader {
 
+    private let requestModifier: (HTTPRequest) -> HTTPRequest
+    
     public init(_ requestModifier: @escaping (HTTPRequest) -> HTTPRequest) {
         self.requestModifier = requestModifier
         super.init()
     }
 
-    public override func load(_ request: HTTPRequest,
-                              completion: @escaping HTTPResultHandler) {
+    public override func load(
+        _ request: HTTPRequest,
+        completion: @escaping HTTPResultHandler
+    ) {
         let modifiedRequest = requestModifier(request)
         super.load(modifiedRequest, completion: completion)
     }
-
-    private let requestModifier: (HTTPRequest) -> HTTPRequest
+    
+    public override func load(_ request: HTTPRequest) async -> HTTPResult {
+        let modifiedRequest = requestModifier(request)
+        return await super.load(modifiedRequest)
+    }
 
 }
