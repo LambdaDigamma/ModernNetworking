@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Resource.swift
 //  
 //
 //  Created by Lennart Fischer on 13.01.21.
@@ -11,6 +11,10 @@ import Foundation
 public struct Resource<T: Model>: Codable {
     
     public let data: T
+    
+    public init(data: T) {
+        self.data = data
+    }
     
 }
 

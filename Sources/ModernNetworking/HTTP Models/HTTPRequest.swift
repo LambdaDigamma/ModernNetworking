@@ -14,6 +14,8 @@ public struct HTTPRequest: Equatable {
     public var headers: [String: String] = [:]
     public var body: HTTPBody = EmptyBody()
 
+    public var cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
+    
     public init() {
         urlComponents.scheme = "https"
     }
@@ -23,7 +25,8 @@ public struct HTTPRequest: Equatable {
         path: String,
         body: HTTPBody = EmptyBody(),
         headers: [String: String] = [:],
-        queryItems: [URLQueryItem] = []
+        queryItems: [URLQueryItem] = [],
+        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
     ) {
         urlComponents.scheme = "https"
         self.method = method
@@ -31,6 +34,7 @@ public struct HTTPRequest: Equatable {
         self.body = body
         self.headers = headers
         self.queryItems = queryItems
+        self.cachePolicy = cachePolicy
     }
 
     private var urlComponents = URLComponents()

@@ -40,7 +40,8 @@ extension URLSessionLoader {
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.name
-
+        urlRequest.cachePolicy = request.cachePolicy
+        
         // add custom HTTP headers from the request
         for (header, value) in request.headers {
             urlRequest.addValue(value, forHTTPHeaderField: header)
@@ -85,6 +86,7 @@ extension URLSessionLoader {
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.name
+        urlRequest.cachePolicy = request.cachePolicy
         
         // add custom HTTP headers from the request
         for (header, value) in request.headers {

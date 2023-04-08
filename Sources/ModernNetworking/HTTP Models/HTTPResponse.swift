@@ -25,6 +25,10 @@ public struct HTTPResponse: Equatable {
 
     private let response: HTTPURLResponse
 
+    var underlyingResponse: HTTPURLResponse {
+        return response
+    }
+    
 }
 
 // MARK: - Convenience API

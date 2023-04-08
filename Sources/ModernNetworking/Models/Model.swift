@@ -65,3 +65,37 @@ extension Array: Model where Element: Model {
 /// A type that represents no model value is present
 public struct Empty: Model {
 }
+
+extension Optional<Int64> {
+    
+    public func toInt() -> Int? {
+        if let self = self {
+            return Int(truncatingIfNeeded: self)
+        } else {
+            return nil
+        }
+    }
+    
+}
+
+extension Optional<Int> {
+    
+    public func toInt64() -> Int64? {
+        if let self = self {
+            return Int64(truncatingIfNeeded: self)
+        } else {
+            return nil
+        }
+    }
+    
+}
+
+extension Int {
+    
+    public func toInt64() -> Int64 {
+        
+        return Int64(truncatingIfNeeded: self)
+        
+    }
+    
+}
