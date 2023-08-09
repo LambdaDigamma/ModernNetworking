@@ -62,12 +62,6 @@ extension URLSessionLoader {
 
         }
 
-        if let cachedResponse = session.configuration.urlCache?.cachedResponse(for: urlRequest) {
-            print("Cached response")
-            print(cachedResponse.response)
-            print(String(data: cachedResponse.data, encoding: .utf8)!)
-        }
-        
         let dataTask = session.dataTask(with: urlRequest) { (data, response, error) in
             let result = self.makeHTTPResult(request, data, response, error)
             completion(result)
@@ -105,12 +99,6 @@ extension URLSessionLoader {
                 return .failure(error)
             }
             
-        }
-        
-        if let cachedResponse = session.configuration.urlCache?.cachedResponse(for: urlRequest) {
-            print("Cached response")
-            print(cachedResponse.response)
-            print(String(data: cachedResponse.data, encoding: .utf8)!)
         }
         
         do {

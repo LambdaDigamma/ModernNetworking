@@ -10,13 +10,20 @@ import Foundation
 public struct ResourceCollection<T: Model>: Codable {
     
     public let data: [T]
-    public let links: ResourceLinks
+    public let links: ResourceLinks?
     public let meta: ResourceMeta
     
     public init(data: [T], links: ResourceLinks, meta: ResourceMeta) {
         self.data = data
         self.links = links
         self.meta = meta
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container: KeyedDecodingContainer<ResourceCollection<T>.CodingKeys> = try decoder.container(keyedBy: ResourceCollection<T>.CodingKeys.self)
+        self.data = try container.decode([T].self, forKey: ResourceCollection<T>.CodingKeys.data)
+        self.links = try container.decodeIfPresent(ResourceLinks.self, forKey: ResourceCollection<T>.CodingKeys.links) ?? ResourceLinks()
+        self.meta = try container.decode(ResourceMeta.self, forKey: ResourceCollection<T>.CodingKeys.meta)
     }
     
 }

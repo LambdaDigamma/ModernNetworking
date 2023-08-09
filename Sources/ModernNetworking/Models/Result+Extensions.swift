@@ -48,7 +48,7 @@ public extension HTTPResult {
         
     }
     
-    func decoding<M: Model>(_ model: M.Type) async throws -> M {
+    func decoding<M: Model>(_ model: M.Type, using decoder: JSONDecoder = M.decoder) async throws -> M {
         
         guard let data = response?.body else {
             throw HTTPError(.invalidResponse, request, response, nil)
@@ -56,7 +56,6 @@ public extension HTTPResult {
         
         do {
             
-            let decoder = M.decoder
             let model = try decoder.decode(M.self, from: data)
             
             return model

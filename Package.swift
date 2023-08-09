@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "ModernNetworking",
-    platforms: [.iOS(.v14), .tvOS(.v13), .macOS(.v11), .watchOS(.v7)],
+    platforms: [.iOS(.v14), .tvOS(.v13), .macOS(.v12), .watchOS(.v7)],
     products: [
         .library(
             name: "ModernNetworking",
