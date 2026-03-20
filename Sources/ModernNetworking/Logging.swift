@@ -9,12 +9,19 @@ import Foundation
 import OSLog
 
 @available(iOS 14.0, *)
-public class Logging {
+public enum Logging {
+    
+    private static let subsystem = "com.lambdadigamma.modernnetworking"
     
     @available(iOS 14.0, *)
     public static let logger: Logger = Logger(
-        subsystem: "com.lambdadigamma.modernnetworking",
+        subsystem: subsystem,
         category: "ModernNetworking"
     )
+    
+    @available(iOS 14.0, *)
+    public static func logger(for category: String) -> Logger {
+        Logger(subsystem: subsystem, category: category)
+    }
     
 }

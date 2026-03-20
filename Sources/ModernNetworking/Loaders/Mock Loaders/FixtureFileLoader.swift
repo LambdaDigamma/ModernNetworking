@@ -20,9 +20,10 @@ public class FixtureFileLoader: MockLoader {
     public init(
         statusCode: HTTPStatusCode = .ok,
         fixtureURL: URL? = nil,
-        fixtureRequest: HTTPRequest? = nil
+        fixtureRequest: HTTPRequest? = nil,
+        logger: Logger = Logging.logger(for: "FixtureFileLoader")
     ) {
-        self.logger = Logger(subsystem: "com.lambdadigamma.modernnetworking", category: "FixtureFileLoader")
+        self.logger = logger
         self.statusCode = statusCode
         self.fixtureURL = fixtureURL
         self.fixtureRequest = fixtureRequest
@@ -61,7 +62,7 @@ public class FixtureFileLoader: MockLoader {
             do {
                 try await self.loadFixtureIfConfigured()
             } catch {
-                print(error)
+                self.logger.error("Failed to load fixture: \(error.localizedDescription)")
             }
             
         }
@@ -73,7 +74,7 @@ public class FixtureFileLoader: MockLoader {
     func loadFixtureIfConfigured() async throws {
         
         guard let fixtureRequest else {
-            print("Checked loading fixture, but it is not provided.")
+            self.logger.info("Checked loading fixture, but it is not provided.")
             return
         }
         
@@ -83,10 +84,10 @@ public class FixtureFileLoader: MockLoader {
         switch result {
             case .success(let response):
                 try self.writeToFile(data: response.body ?? Data())
-                print("Wrote fixture to url: \(fixtureURL?.absoluteString ?? "not configured")")
+                self.logger.info("Wrote fixture to url: \(self.fixtureURL?.absoluteString ?? "not configured")")
                 
             case .failure(let error):
-                print(error)
+                self.logger.error("Failed to load fixture: \(error.localizedDescription)")
         }
         
     }

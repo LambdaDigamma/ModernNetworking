@@ -24,9 +24,10 @@ public class FileLoader: MockLoader {
         resource: String,
         fileExtension: String,
         bundle: Bundle,
-        fixtureRequest: HTTPRequest? = nil
+        fixtureRequest: HTTPRequest? = nil,
+        logger: Logger = Logging.logger(for: "FileLoader")
     ) {
-        self.logger = Logger(subsystem: "com.lambdadigamma.modernnetworking", category: "FileLoader")
+        self.logger = logger
         self.statusCode = statusCode
         self.resource = resource
         self.fileExtension = fileExtension

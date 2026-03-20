@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 
 public extension HTTPResult {
     
@@ -24,12 +25,7 @@ public extension HTTPResult {
             
         } catch let error as DecodingError {
             
-            if #available(iOS 14.0, *) {
-                Logging.logger.info("Decoding failed: \(error.localizedDescription, privacy: .public) \(error.errorDescription ?? "", privacy: .public) \(error.failureReason ?? "", privacy: .public)")
-                Logging.logger.info("")
-                print(error)
-                print(error.failureReason ?? "")
-            }
+            Logging.logger.info("Decoding failed: \(error.localizedDescription, privacy: .public) \(error.errorDescription ?? "", privacy: .public) \(error.failureReason ?? "", privacy: .public)")
             
             throw HTTPError(.decodingError, request, response, error)
             

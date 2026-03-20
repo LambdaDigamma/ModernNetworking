@@ -6,12 +6,13 @@
 //
 
 import Foundation
-
+import OSLog
 
 /// A mock loader that always creates a successful response with a
 /// given status code and your provided codable data.
 public class EncodingMockLoader: MockLoader {
     
+    private let logger: Logger
     public let statusCode: HTTPStatusCode
     public let headers: [String: String]
     public var data: Data? = nil
@@ -21,17 +22,18 @@ public class EncodingMockLoader: MockLoader {
         returnedData data: EncodingType,
         _ statusCode: HTTPStatusCode = .ok,
         encoder: JSONEncoder = JSONEncoder(),
-        headers: [String: String] = [:]
+        headers: [String: String] = [:],
+        logger: Logger = Logging.logger(for: "EncodingMockLoader")
     ) {
         
+        self.logger = logger
         self.statusCode = statusCode
         self.headers = headers
         
         do {
             self.data = try encoder.encode(data)
         } catch {
-            print("Some error occured while encoding:")
-            print(error.localizedDescription)
+            self.logger.error("Some error occured while encoding: \(error.localizedDescription)")
         }
         
     }

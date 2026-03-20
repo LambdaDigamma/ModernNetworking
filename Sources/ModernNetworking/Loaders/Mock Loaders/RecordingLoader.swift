@@ -18,11 +18,14 @@ enum RecordingError: Error {
 @available(iOS 14.0, *)
 public class RecordingLoader: MockLoader {
     
+    private let logger: Logger
+    
     public static var defaultTestBundle: Bundle? {
         return Bundle.allBundles.first { $0.bundlePath.hasSuffix(".xctest") }
     }
     
-    public override init() {
+    public init(logger: Logger = Logging.logger(for: "RecordingLoader")) {
+        self.logger = logger
         super.init()
         self.setup()
     }
@@ -40,7 +43,7 @@ public class RecordingLoader: MockLoader {
             
             try FileManager.default.createDirectory(at: recordingDirectory, withIntermediateDirectories: true)
             
-            NSLog("Configured recording directory at: \(recordingDirectory.absoluteURL)")
+            self.logger.info("Configured recording directory at: \(self.recordingDirectory.absoluteURL)")
             
         } catch {
             fatalError("Attention")
@@ -53,7 +56,7 @@ public class RecordingLoader: MockLoader {
     public override func load(_ request: HTTPRequest) async -> HTTPResult {
         
         if let storedResponse = checkExistingResponse(for: request) {
-            NSLog("Using stored response for request \(request)")
+            self.logger.info("Using stored response for request \(request.url?.absoluteString ?? "unknown")")
             return HTTPResult.success(storedResponse)
         }
         
@@ -66,7 +69,7 @@ public class RecordingLoader: MockLoader {
         do {
             try self.store(result: response)
         } catch {
-            NSLog(error.debugDescription)
+            self.logger.error("\(error.localizedDescription)")
         }
         
         return response
@@ -99,7 +102,7 @@ public class RecordingLoader: MockLoader {
             return HTTPResponse(request, urlResponse, data)
             
         } catch {
-            NSLog(error.debugDescription)
+            self.logger.error("\(error.localizedDescription)")
         }
         
         return nil

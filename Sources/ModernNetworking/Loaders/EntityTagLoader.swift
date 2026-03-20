@@ -73,9 +73,9 @@ public class EntityTagLoader: HTTPLoader {
     private let logger: Logger
     private let cache: any EntityTagCaching
     
-    public init(cache: any EntityTagCaching = BasicEntityTagCache()) {
+    public init(cache: any EntityTagCaching = BasicEntityTagCache(), logger: Logger = Logging.logger(for: "EntityTagLoader")) {
         
-        self.logger = Logger(.default)
+        self.logger = logger
         self.cache = cache
         
     }
@@ -107,7 +107,7 @@ public class EntityTagLoader: HTTPLoader {
     
     private func store(entityTag: String, for url: URL) async {
         
-        logger.info("Caching entity tag '\(entityTag)' for url '\(url.absoluteString)' ")
+        self.logger.info("Caching entity tag '\(entityTag)' for url '\(url.absoluteString)' ")
         
         await cache.store(entityTag: entityTag, for: url)
         
@@ -117,7 +117,7 @@ public class EntityTagLoader: HTTPLoader {
         
         if let cached = await cache.loadEntityTag(for: url) {
             
-            logger.info("Found entity tag '\(cached)' for url '\(url.absoluteString)' ")
+            self.logger.info("Found entity tag '\(cached)' for url '\(url.absoluteString)' ")
             
             return String(cached)
         }
