@@ -17,36 +17,21 @@ public class StatusCodeMockLoader: MockLoader {
         self.statusCode = statusCode
     }
 
-    public override func load(_ request: HTTPRequest,
-                              completion: @escaping HTTPResultHandler) {
-
-        let urlResponse = HTTPURLResponse(
-            url: request.url!,
-            statusCode: statusCode.value,
-            httpVersion: "1.1",
-            headerFields: nil
-        )
-        
-        
-        let response = HTTPResponse(request, urlResponse!)
-        completion(.success(response))
-
-    }
-    
     public override func load(_ request: HTTPRequest) async -> HTTPResult {
-        
-        let urlResponse = HTTPURLResponse(
-            url: request.url!,
+        guard let url = request.url else {
+            return .failure(HTTPError(.invalidRequest(.invalidURL), request))
+        }
+
+        guard let urlResponse = HTTPURLResponse(
+            url: url,
             statusCode: statusCode.value,
             httpVersion: "1.1",
             headerFields: nil
-        )
-        
-        
-        let response = HTTPResponse(request, urlResponse!)
-        
-        return .success(response)
-        
+        ) else {
+            return .failure(HTTPError(.invalidResponse, request))
+        }
+
+        return .success(HTTPResponse(request, urlResponse))
     }
     
 }

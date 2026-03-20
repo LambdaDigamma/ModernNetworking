@@ -73,34 +73,30 @@ public class RecordingLoader: MockLoader {
         
     }
     
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
-        
-        
-        
-    }
-    
     func checkExistingResponse(for request: HTTPRequest) -> HTTPResponse? {
         
         guard let bundle = Self.defaultTestBundle else {
             return nil
         }
         
-        guard let url = bundle.url(forResource: fileName(request: request), withExtension: ".json") else {
+        guard let fixtureURL = bundle.url(forResource: fileName(request: request), withExtension: ".json") else {
             return nil
         }
         
         do {
+            guard let requestURL = request.url else { return nil }
             
             let urlResponse = HTTPURLResponse(
-                url: request.url!,
+                url: requestURL,
                 statusCode: 200,
                 httpVersion: "1.1",
                 headerFields: [:]
             )
             
-            let data = try Data(contentsOf: url)
+            let data = try Data(contentsOf: fixtureURL)
             
-            return HTTPResponse(request, urlResponse!, data)
+            guard let urlResponse else { return nil }
+            return HTTPResponse(request, urlResponse, data)
             
         } catch {
             NSLog(error.debugDescription)

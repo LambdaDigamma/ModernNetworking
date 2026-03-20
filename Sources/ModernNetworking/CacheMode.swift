@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum CacheMode {
+public enum CacheMode: Sendable {
     
     case cached
     case revalidate

@@ -8,26 +8,23 @@
 import Foundation
 
 
-public typealias HTTPHandler = (HTTPResult) -> Void
-public typealias MockHandler = (HTTPRequest, HTTPHandler) -> Void
+public typealias AsyncMockHandler = (HTTPRequest) async -> HTTPResult
 
-/// Does not yet support async
 public class SequentialMockLoader: MockLoader {
 
-    private var nextHandlers = Array<MockHandler>()
+    private var nextHandlers = Array<AsyncMockHandler>()
     
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPHandler) {
+    public override func load(_ request: HTTPRequest) async -> HTTPResult {
         if nextHandlers.isEmpty == false {
             let next = nextHandlers.removeFirst()
-            next(request, completion)
+            return await next(request)
         } else {
-            let error = HTTPError(.cannotConnect, request, nil, "base mock handler")
-            completion(.failure(error))
+            return .failure(HTTPError(.cannotConnect, request))
         }
     }
     
     @discardableResult
-    public func then(_ handler: @escaping MockHandler) -> MockLoader {
+    public func then(_ handler: @escaping AsyncMockHandler) -> MockLoader {
         nextHandlers.append(handler)
         return self
     }

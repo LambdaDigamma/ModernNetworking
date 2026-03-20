@@ -16,35 +16,6 @@ public class PrintLoader: HTTPLoader {
     private let enabled: Bool = false
 #endif
     
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
-        
-        if self.enabled {
-            print("Loading \(request)")
-        }
-            
-        super.load(request, completion: { result in
-            
-            if self.enabled {
-                
-                print("Loaded: \(request)")
-                print("Reeceived result: \(result)")
-                switch result {
-                    case .success(let response):
-                        guard let data = response.body else { return }
-                        print(String(decoding: data, as: UTF8.self))
-                    case .failure(let error):
-                        print("Failed with error:")
-                        print(error)
-                        print(error.underlyingError ?? "")
-                }
-                
-            }
-                
-            completion(result)
-        })
-        
-    }
-    
     public override func load(_ request: HTTPRequest) async -> HTTPResult {
         
         if self.enabled {

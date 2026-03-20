@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct HTTPResponse: Equatable {
+public struct HTTPResponse: Equatable, Sendable {
 
     public let request: HTTPRequest
     public let body: Data?

@@ -6,10 +6,6 @@
 //
 
 import Foundation
-import Dispatch
-
-
-public typealias HTTPResultHandler = (HTTPResult) -> Void
 
 open class HTTPLoader {
 
@@ -22,43 +18,19 @@ open class HTTPLoader {
 
     public init() {}
 
-    open func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
-
-        if let next = nextLoader {
-            next.load(request, completion: completion)
-        } else {
-            let error = HTTPError(.cannotConnect, request, nil, "no HTTPLoader available")
-            completion(.failure(error))
-        }
-
-    }
-
     open func load(_ request: HTTPRequest) async -> HTTPResult {
         if let next = nextLoader {
             return await next.load(request)
         } else {
-            let error = HTTPError(.cannotConnect, request, nil, "no HTTPLoader available")
+            let error = HTTPError(.cannotConnect, request)
             return .failure(error)
         }
     }
-    
-    open func reset(with group: DispatchGroup) {
-        nextLoader?.reset(with: group)
+
+    open func reset() async {
+        if let nextLoader {
+            await nextLoader.reset()
+        }
     }
 
 }
-
-extension HTTPLoader {
-
-    public final func reset(
-        on queue: DispatchQueue = .main,
-        completionHandler: @escaping () -> Void
-    ) {
-        let group = DispatchGroup()
-        self.reset(with: group)
-        group.notify(queue: queue, execute: completionHandler)
-    }
-
-}
-
-extension String: @retroactive Error {}

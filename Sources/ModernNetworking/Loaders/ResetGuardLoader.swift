@@ -5,47 +5,43 @@
 //  Created by Lennart Fischer on 06.01.21.
 //
 
-import Dispatch
-
-
 public class ResetGuardLoader: HTTPLoader {
 
-    private var isResetting = SynchronizedBarrier(false)
-    
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
+    private actor State {
+        private var isResetting = false
 
-        if isResetting.value == false {
-            super.load(request, completion: completion)
-        } else {
-            let error = HTTPError(.resetInProgress, request)
-            completion(.failure(error))
+        func beginReset() -> Bool {
+            guard isResetting == false else { return false }
+            isResetting = true
+            return true
         }
 
-    }
-
-    public override func reset(with group: DispatchGroup) {
-
-        if isResetting.value == true { return }
-        guard let next = nextLoader else { return }
-
-        group.enter()
-        isResetting.value { $0 = true }
-        next.reset {
-            self.isResetting.value { $0 = false }
-            group.leave()
+        func finishReset() {
+            isResetting = false
         }
 
+        func currentlyResetting() -> Bool {
+            isResetting
+        }
     }
+
+    private let state = State()
 
     public override func load(_ request: HTTPRequest) async -> HTTPResult {
-        
-        if isResetting.value == false {
+        if await state.currentlyResetting() == false {
             return await super.load(request)
-        } else {
-            let error = HTTPError(.resetInProgress, request)
-            return .failure(error)
         }
-        
+
+        return .failure(HTTPError(.resetInProgress, request))
     }
-    
+
+    public override func reset() async {
+        guard await state.beginReset() else { return }
+
+        if let nextLoader {
+            await nextLoader.reset()
+        }
+
+        await state.finishReset()
+    }
 }

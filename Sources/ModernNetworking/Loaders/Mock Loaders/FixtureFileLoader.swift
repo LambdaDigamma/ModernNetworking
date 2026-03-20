@@ -28,46 +28,19 @@ public class FixtureFileLoader: MockLoader {
         self.fixtureRequest = fixtureRequest
     }
     
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
-        
-        let urlResponse = HTTPURLResponse(
-            url: request.url!,
-            statusCode: statusCode.value,
-            httpVersion: "1.1",
-            headerFields: [:]
-        )
-        
-        var data = Data()
-        
-        if let url = fixtureURL, FileManager.default.fileExists(atPath: url.path) {
-            
-            do {
-                
-                data = try Data(contentsOf: url)
-                
-            } catch {
-                self.logger.error("An error occured: \(error.localizedDescription)")
-            }
-            
-        } else {
-            
-            self.logger.error("Could not find a file for the provided information.")
-        }
-        
-        let response = HTTPResponse(request, urlResponse!, data)
-        
-        completion(.success(response))
-        
-    }
-    
     public override func load(_ request: HTTPRequest) async -> HTTPResult {
-        
-        let urlResponse = HTTPURLResponse(
-            url: request.url!,
+        guard let url = request.url else {
+            return .failure(HTTPError(.invalidRequest(.invalidURL), request))
+        }
+
+        guard let urlResponse = HTTPURLResponse(
+            url: url,
             statusCode: statusCode.value,
             httpVersion: "1.1",
             headerFields: [:]
-        )
+        ) else {
+            return .failure(HTTPError(.invalidResponse, request))
+        }
         
         var data = Data()
         
@@ -93,9 +66,7 @@ public class FixtureFileLoader: MockLoader {
             
         }
         
-        let response = HTTPResponse(request, urlResponse!, data)
-        
-        return .success(response)
+        return .success(HTTPResponse(request, urlResponse, data))
         
     }
     

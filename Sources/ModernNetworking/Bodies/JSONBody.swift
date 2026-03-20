@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct JSONBody<T: Encodable>: HTTPBody {
+public struct JSONBody<T: Encodable & Sendable>: HTTPBody {
     
     public let isEmpty: Bool = false
     public var additionalHeaders = [
@@ -40,20 +40,3 @@ public struct JSONBody<T: Encodable>: HTTPBody {
     }
     
 }
-
-//#if canImport(Combine)
-//import Combine
-//#endif
-//
-//@available(OSX 10.15, *)
-//@available(iOS 13.0, *)
-//extension JSONBody {
-//
-//    public init<T: Encodable, E: TopLevelEncoder>(_ value: T, encoder: E)
-//        where E.Output == Data {
-//        
-//        self._encode = { try encoder.encode(value) }
-//        
-//    }
-//
-//}

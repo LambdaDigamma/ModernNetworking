@@ -7,6 +7,11 @@
 
 import Foundation
 
+public protocol URLSessioning: Sendable {
+    func data(for request: URLRequest) async throws -> (Data, URLResponse)
+}
+
+extension URLSession: URLSessioning {}
 
 public final class URLSessionLoader: HTTPLoader {
 
@@ -14,154 +19,74 @@ public final class URLSessionLoader: HTTPLoader {
         self.session = session
     }
 
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
-        _load(request, completion: completion)
+    public init(session: any URLSessioning) {
+        self.session = session
     }
-    
+    private let session: any URLSessioning
+
     public override func load(_ request: HTTPRequest) async -> HTTPResult {
-        await _load(request)
-    }
-
-    private let session: URLSession
-
-}
-
-// MARK: - Private API
-
-extension URLSessionLoader {
-
-    private func _load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
-
-        guard let url = request.url else {
-            let error = HTTPError(.invalidRequest(.invalidURL), request)
-            completion(.failure(error))
-            return
-        }
-
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = request.method.name
-        urlRequest.cachePolicy = request.cachePolicy
-        
-        // add custom HTTP headers from the request
-        for (header, value) in request.headers {
-            urlRequest.addValue(value, forHTTPHeaderField: header)
-        }
-
-        if request.body.isEmpty == false {
-
-            // add custom HTTP headers from the body
-            for (header, value) in request.body.additionalHeaders {
-                urlRequest.addValue(value, forHTTPHeaderField: header)
-            }
-
-            do { urlRequest.httpBody = try request.body.encode() } catch {
-                let error = HTTPError(.invalidRequest(.invalidBody), request)
-                completion(.failure(error))
-                return
-            }
-
-        }
-
-        let dataTask = session.dataTask(with: urlRequest) { (data, response, error) in
-            let result = self.makeHTTPResult(request, data, response, error)
-            completion(result)
-        }
-
-        dataTask.resume()
-
-    }
-
-    private func _load(_ request: HTTPRequest) async -> HTTPResult {
-        
-        guard let url = request.url else {
-            let error = HTTPError(.invalidRequest(.invalidURL), request)
+        let urlRequest: URLRequest
+        do {
+            urlRequest = try makeURLRequest(from: request)
+        } catch let error as HTTPError {
             return .failure(error)
+        } catch {
+            return .failure(HTTPError(.invalidRequest(.invalidBody), request, nil, error))
         }
-        
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = request.method.name
-        urlRequest.cachePolicy = request.cachePolicy
-        
-        // add custom HTTP headers from the request
-        for (header, value) in request.headers {
-            urlRequest.addValue(value, forHTTPHeaderField: header)
-        }
-        
-        if request.body.isEmpty == false {
-            
-            // add custom HTTP headers from the body
-            for (header, value) in request.body.additionalHeaders {
-                urlRequest.addValue(value, forHTTPHeaderField: header)
-            }
-            
-            do { urlRequest.httpBody = try request.body.encode() } catch {
-                let error = HTTPError(.invalidRequest(.invalidBody), request)
-                return .failure(error)
-            }
-            
-        }
-        
+
         do {
             let (data, response) = try await session.data(for: urlRequest)
-            
-            return self.makeHTTPResult(request, data, response, nil)
-            
-        } catch {
-            return self.makeHTTPResult(request, nil, nil, error)
-        }
-        
-    }
-    
-    private func makeHTTPResult(
-        _ request: HTTPRequest,
-        _ data: Data?,
-        _ response: URLResponse?,
-        _ error: Error?
-    ) -> HTTPResult {
-
-        var httpResponse: HTTPResponse?
-
-        if let response = response as? HTTPURLResponse {
-            httpResponse = HTTPResponse(request, response, data)
-        }
-
-        // an URL error
-        if let error = error as? URLError {
-            let code: HTTPError.Code
-            switch error.code {
-
-                case .badURL:
-                    code = .invalidRequest(.invalidURL)
-
-                // case .unsupportedURL: code = ...
-                // case .cannotFindHost: code = ...
-                // ...
-
-                default:
-                    code = .unknown
-
+            guard let httpURLResponse = response as? HTTPURLResponse else {
+                return .failure(HTTPError(.invalidResponse, request))
             }
-            let httpError = HTTPError(code, request, httpResponse, error)
-            return .failure(httpError)
+
+            return .success(HTTPResponse(request, httpURLResponse, data))
+        } catch is CancellationError {
+            return .failure(HTTPError(.cancelled, request))
+        } catch let error as URLError {
+            return .failure(HTTPError(mapErrorCode(error), request, nil, error))
+        } catch {
+            return .failure(HTTPError(.unknown, request, nil, error))
+        }
+    }
+
+    private func makeURLRequest(from request: HTTPRequest) throws -> URLRequest {
+        guard let url = request.url else {
+            throw HTTPError(.invalidRequest(.invalidURL), request)
         }
 
-        // an error, but not a URL error
-        else if let error = error {
-            let httpError = HTTPError(.unknown, request, httpResponse, error)
-            return .failure(httpError)
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = request.method.name
+        urlRequest.cachePolicy = request.cachePolicy
+
+        for (header, value) in request.headers {
+            urlRequest.addValue(value, forHTTPHeaderField: header)
         }
 
-        // no error, and an HTTPURLResponse
-        else if let response = httpResponse {
-            return .success(response)
+        if request.body.isEmpty == false {
+            for (header, value) in request.body.additionalHeaders {
+                urlRequest.addValue(value, forHTTPHeaderField: header)
+            }
+
+            urlRequest.httpBody = try request.body.encode()
         }
 
-        // not an error, but also not an HTTPURLResponse
-        else {
-            let httpError = HTTPError(.invalidResponse, request, nil, error)
-            return .failure(httpError)
-        }
+        return urlRequest
+    }
 
+    private func mapErrorCode(_ error: URLError) -> HTTPError.Code {
+        switch error.code {
+            case .badURL:
+                return .invalidRequest(.invalidURL)
+            case .cancelled:
+                return .cancelled
+            case .secureConnectionFailed, .serverCertificateHasBadDate, .serverCertificateUntrusted, .serverCertificateHasUnknownRoot, .serverCertificateNotYetValid, .clientCertificateRejected, .clientCertificateRequired:
+                return .insecureConnection
+            case .cannotConnectToHost, .cannotFindHost, .networkConnectionLost, .notConnectedToInternet, .timedOut, .dnsLookupFailed, .resourceUnavailable:
+                return .cannotConnect
+            default:
+                return .unknown
+        }
     }
 
 }

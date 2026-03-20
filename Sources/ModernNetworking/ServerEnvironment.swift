@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ServerEnvironment: HTTPRequestOption {
+public struct ServerEnvironment: HTTPRequestOption, Sendable {
 
     public var scheme: String = "https"
     public var host: String

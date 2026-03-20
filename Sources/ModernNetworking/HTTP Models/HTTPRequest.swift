@@ -8,11 +8,11 @@
 import Foundation
 
 
-public struct HTTPRequest: Equatable {
+public struct HTTPRequest: Equatable, Sendable {
     
     public var method: HTTPMethod = .get
     public var headers: [String: String] = [:]
-    public var body: HTTPBody = EmptyBody()
+    public var body: any HTTPBody = EmptyBody()
 
     public var cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
     
@@ -38,7 +38,7 @@ public struct HTTPRequest: Equatable {
     }
 
     private var urlComponents = URLComponents()
-    private var options = [ObjectIdentifier: Any]()
+    private var options = [ObjectIdentifier: any Sendable]()
 
     /// Attention: use this only for debugging and testing.
     /// The request body is not being compared.

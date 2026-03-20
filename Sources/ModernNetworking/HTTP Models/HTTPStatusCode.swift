@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct HTTPStatusCode: Hashable, Equatable {
+public struct HTTPStatusCode: Hashable, Equatable, Sendable {
 
     /// HTTP Ok (`200`)
     public static let ok = HTTPStatusCode(value: 200)

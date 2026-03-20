@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:6.2
 
 import PackageDescription
 
@@ -11,9 +11,7 @@ let package = Package(
             targets: ["ModernNetworking"]
         ),
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-docc-plugin.git", from: "1.0.0"),
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "ModernNetworking",

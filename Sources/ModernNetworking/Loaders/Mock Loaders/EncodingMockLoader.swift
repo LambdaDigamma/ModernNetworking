@@ -6,12 +6,10 @@
 //
 
 import Foundation
-import Combine
 
 
 /// A mock loader that always creates a successful response with a
 /// given status code and your provided codable data.
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public class EncodingMockLoader: MockLoader {
     
     public let statusCode: HTTPStatusCode
@@ -19,12 +17,12 @@ public class EncodingMockLoader: MockLoader {
     public var data: Data? = nil
     
     
-    public init<EncodingType: Encodable, Encoder: TopLevelEncoder>(
+    public init<EncodingType: Encodable>(
         returnedData data: EncodingType,
         _ statusCode: HTTPStatusCode = .ok,
-        encoder: Encoder,
+        encoder: JSONEncoder = JSONEncoder(),
         headers: [String: String] = [:]
-    ) where Encoder.Output == Data {
+    ) {
         
         self.statusCode = statusCode
         self.headers = headers
@@ -44,34 +42,21 @@ public class EncodingMockLoader: MockLoader {
         self.init(returnedData: model, statusCode, encoder: M.encoder, headers: headers)
     }
     
-    public override func load(_ request: HTTPRequest,
-                              completion: @escaping HTTPResultHandler) {
-        
-        let urlResponse = HTTPURLResponse(
-            url: request.url!,
-            statusCode: statusCode.value,
-            httpVersion: "1.1",
-            headerFields: headers
-        )
-        
-        let response = HTTPResponse(request, urlResponse!, data)
-        completion(.success(response))
-        
-    }
-    
     public override func load(_ request: HTTPRequest) async -> HTTPResult {
-    
-        let urlResponse = HTTPURLResponse(
-            url: request.url!,
+        guard let url = request.url else {
+            return .failure(HTTPError(.invalidRequest(.invalidURL), request))
+        }
+
+        guard let urlResponse = HTTPURLResponse(
+            url: url,
             statusCode: statusCode.value,
             httpVersion: "1.1",
             headerFields: headers
-        )
-        
-        let response = HTTPResponse(request, urlResponse!, data)
-        
-        return .success(response)
-        
+        ) else {
+            return .failure(HTTPError(.invalidResponse, request))
+        }
+
+        return .success(HTTPResponse(request, urlResponse, data))
     }
     
 }

@@ -8,62 +8,62 @@
 import Foundation
 import OSLog
 
-public protocol EntityTagCaching {
-    
-    func store(entityTag: String, for url: URL)
-    
-    func loadEntityTag(for url: URL) -> String?
-    
-    func store(entityTag: String, for url: URL) async throws
-    
+public protocol EntityTagCaching: Sendable {
+    func store(entityTag: String, for url: URL) async
+    func loadEntityTag(for url: URL) async -> String?
 }
 
-public class BasicEntityTagCache: EntityTagCaching {
+public actor BasicEntityTagCache: EntityTagCaching {
     
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
+    private let cacheFileURL: URL
+    private var tagsCache: [String: String]?
     
-    public init() {
+    public init(cacheFileURL: URL? = nil) {
         self.decoder = JSONDecoder()
         self.encoder = JSONEncoder()
+        self.cacheFileURL = cacheFileURL ?? Self.defaultCacheFileURL()
     }
     
-    public func store(entityTag: String, for url: URL) {
-        
-        guard let url = cacheUrl() else { return }
-        
+    public func store(entityTag: String, for url: URL) async {
         var tags = loadTags()
         tags[url.absoluteString] = entityTag
-        
-        guard let data = try? encoder.encode(tags) else { return }
-        try? data.write(to: url)
-        
+        persist(tags: tags)
     }
     
-    public func loadEntityTag(for url: URL) -> String? {
-        
-        if let tag = loadTags()[url.absoluteString] {
-            return tag
-        }
-        
-        return nil
-        
+    public func loadEntityTag(for url: URL) async -> String? {
+        loadTags()[url.absoluteString]
     }
     
     private func loadTags() -> [String: String] {
-        
-        guard let url = cacheUrl() else { return [:] }
-        guard let data = try? Data(contentsOf: url) else { return [:] }
-        guard let tags = try? decoder.decode([String: String].self, from: data) else { return [:] }
-        
+        if let tagsCache {
+            return tagsCache
+        }
+
+        guard let data = try? Data(contentsOf: cacheFileURL) else {
+            tagsCache = [:]
+            return [:]
+        }
+
+        guard let tags = try? decoder.decode([String: String].self, from: data) else {
+            tagsCache = [:]
+            return [:]
+        }
+
+        tagsCache = tags
         return tags
-        
     }
     
-    private func cacheUrl() -> URL? {
-        
-        return FileManager.default.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent("entity_tags.json")
-        
+    private func persist(tags: [String: String]) {
+        tagsCache = tags
+        guard let data = try? encoder.encode(tags) else { return }
+        try? data.write(to: cacheFileURL, options: .atomic)
+    }
+
+    private static func defaultCacheFileURL() -> URL {
+        let baseURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first ?? URL(fileURLWithPath: NSTemporaryDirectory())
+        return baseURL.appendingPathComponent("modernnetworking_entity_tags.json")
     }
     
 }
@@ -71,45 +71,12 @@ public class BasicEntityTagCache: EntityTagCaching {
 public class EntityTagLoader: HTTPLoader {
     
     private let logger: Logger
-    private let cache: EntityTagCaching
+    private let cache: any EntityTagCaching
     
-    public init(cache: EntityTagCaching = BasicEntityTagCache()) {
+    public init(cache: any EntityTagCaching = BasicEntityTagCache()) {
         
         self.logger = Logger(.default)
         self.cache = cache
-        
-    }
-    
-    public override func load(_ request: HTTPRequest, completion: @escaping HTTPResultHandler) {
-        
-        var copy = request
-        
-        if let url = copy.url, let entityTag = loadEntityTag(for: url) {
-            copy.headers["If-None-Match"] = entityTag
-        }
-        
-        super.load(copy, completion: { result in
-            
-//            print(result.response?.headers)
-//            print(result.response?.headers["Etag"] as? String)
-//            print(result.request.url)
-            
-            if let entityTag = result.response?.headers["Etag"] as? String, let url = result.request.url {
-                self.store(entityTag: entityTag, for: url)
-            }
-            
-            switch result {
-                case .success(let response):
-                    guard let data = response.body else { return }
-                    print(String(decoding: data, as: UTF8.self))
-                case .failure(let error):
-                    print("Failed with error:")
-                    print(error)
-                    print(error.underlyingError ?? "")
-            }
-            
-            completion(result)
-        })
         
     }
     
@@ -117,7 +84,7 @@ public class EntityTagLoader: HTTPLoader {
         
         var copy = request
         
-        if let url = copy.url, let entityTag = loadEntityTag(for: url) {
+        if let url = copy.url, let entityTag = await loadEntityTag(for: url) {
             copy.headers["If-None-Match"] = entityTag
         }
         
@@ -125,28 +92,30 @@ public class EntityTagLoader: HTTPLoader {
         
         switch result {
             case .success(let response):
-                if let entityTag = response.headers["Etag"] as? String, let url = result.request.url {
-                    self.store(entityTag: entityTag, for: url)
+                let entityTag = response.headers["Etag"] as? String
+                    ?? response.headers["ETag"] as? String
+
+                if let entityTag, let url = result.request.url {
+                    await self.store(entityTag: entityTag, for: url)
                 }
-                break
-            case .failure(_):
+            case .failure:
                 break
         }
         
         return result
     }
     
-    private func store(entityTag: String, for url: URL) {
+    private func store(entityTag: String, for url: URL) async {
         
         logger.info("Caching entity tag '\(entityTag)' for url '\(url.absoluteString)' ")
         
-        cache.store(entityTag: entityTag, for: url)
+        await cache.store(entityTag: entityTag, for: url)
         
     }
     
-    private func loadEntityTag(for url: URL) -> String? {
+    private func loadEntityTag(for url: URL) async -> String? {
         
-        if let cached = cache.loadEntityTag(for: url) {
+        if let cached = await cache.loadEntityTag(for: url) {
             
             logger.info("Found entity tag '\(cached)' for url '\(url.absoluteString)' ")
             
