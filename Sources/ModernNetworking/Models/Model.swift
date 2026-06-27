@@ -8,7 +8,7 @@
 import Foundation
 
 
-nonisolated public protocol Model: Codable {
+public protocol Model: Codable {
     
     static var decoder: JSONDecoder { get }
     
@@ -16,7 +16,7 @@ nonisolated public protocol Model: Codable {
     
 }
 
-nonisolated public extension Model {
+public extension Model {
     
     static var decoder: JSONDecoder {
         
@@ -50,7 +50,7 @@ nonisolated public extension Model {
     
 }
 
-nonisolated extension Array: Model where Element: Model {
+extension Array: Model where Element: Model {
     
     public static var decoder: JSONDecoder {
         return Element.decoder
@@ -63,10 +63,10 @@ nonisolated extension Array: Model where Element: Model {
 }
 
 /// A type that represents no model value is present
-nonisolated public struct Empty: Model {
+public struct Empty: Model {
 }
 
-nonisolated extension Optional<Int64> {
+extension Optional<Int64> {
     
     public func toInt() -> Int? {
         if let self = self {
@@ -78,7 +78,7 @@ nonisolated extension Optional<Int64> {
     
 }
 
-nonisolated extension Optional<Int> {
+extension Optional<Int> {
     
     public func toInt64() -> Int64? {
         if let self = self {
@@ -90,7 +90,7 @@ nonisolated extension Optional<Int> {
     
 }
 
-nonisolated extension Int {
+extension Int {
     
     public func toInt64() -> Int64 {
         

@@ -1,8 +1,7 @@
 import XCTest
 @testable import ModernNetworking
 
-nonisolated final class ModernNetworkingTests: XCTestCase {
-    @MainActor
+final class ModernNetworkingTests: XCTestCase {
     func testApplyEnvironmentLoaderAppliesEnvironmentValues() async {
         let environment = ServerEnvironment(
             scheme: "https",
@@ -33,7 +32,6 @@ nonisolated final class ModernNetworkingTests: XCTestCase {
         XCTAssertEqual(captured?.queryItems.last, URLQueryItem(name: "locale", value: "en"))
     }
 
-    @MainActor
     func testEntityTagLoaderReusesTagForSubsequentRequests() async {
         let cache = InMemoryEntityTagCache()
         let recorder = RequestRecorder()
@@ -68,7 +66,6 @@ nonisolated final class ModernNetworkingTests: XCTestCase {
         XCTAssertEqual(requests[1].headers["If-None-Match"], "W/\"abc\"")
     }
 
-    @MainActor
     func testResetGuardLoaderRejectsLoadsWhileResetting() async {
         let resettable = ControlledResetLoader()
         let guardLoader = ResetGuardLoader()
@@ -91,7 +88,6 @@ nonisolated final class ModernNetworkingTests: XCTestCase {
         XCTAssertNotNil(nextResult.response)
     }
 
-    @MainActor
     func testURLSessionLoaderBuildsURLRequestAndReturnsResponse() async {
         let session = StubSession { request in
             XCTAssertEqual(request.httpMethod, "POST")
@@ -110,6 +106,7 @@ nonisolated final class ModernNetworkingTests: XCTestCase {
         }
 
         let loader = URLSessionLoader(session: session)
+        struct Payload: Codable, Sendable { let id: Int }
 
         let request = HTTPRequest(
             method: .post,
@@ -124,7 +121,6 @@ nonisolated final class ModernNetworkingTests: XCTestCase {
         XCTAssertEqual(result.response?.headers["X-Server"] as? String, "stub")
     }
 
-    @MainActor
     func testURLSessionLoaderMapsCancellationErrors() async {
         let session = StubSession { _ in
             throw URLError(.cancelled)
@@ -135,8 +131,12 @@ nonisolated final class ModernNetworkingTests: XCTestCase {
         XCTAssertEqual(result.error?.code, .cancelled)
     }
 
-    @MainActor
     func testDecodingExtensionDecodesModelWithAsyncAwait() async throws {
+        struct Todo: Model, Equatable {
+            let id: Int
+            let title: String
+        }
+
         let body = Data("{\"id\":1,\"title\":\"Ship async API\"}".utf8)
         let response = makeResponse(for: makeRequest(path: "/todos/1"), body: body)
 
@@ -144,7 +144,6 @@ nonisolated final class ModernNetworkingTests: XCTestCase {
         XCTAssertEqual(value, Todo(id: 1, title: "Ship async API"))
     }
 
-    @MainActor
     func testSequentialMockLoaderConsumesHandlersInOrder() async {
         let loader = SequentialMockLoader()
         loader.then { request in
@@ -185,15 +184,6 @@ nonisolated final class ModernNetworkingTests: XCTestCase {
         )!
         return HTTPResponse(request, response, body)
     }
-}
-
-nonisolated private struct Payload: Codable, Sendable {
-    let id: Int
-}
-
-nonisolated private struct Todo: Model, Equatable {
-    let id: Int
-    let title: String
 }
 
 private extension HTTPRequest {

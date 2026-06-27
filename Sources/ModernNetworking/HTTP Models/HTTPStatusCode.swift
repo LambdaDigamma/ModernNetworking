@@ -8,7 +8,7 @@
 import Foundation
 
 
-nonisolated public struct HTTPStatusCode: Hashable, Equatable, Sendable {
+public struct HTTPStatusCode: Hashable, Equatable, Sendable {
 
     /// HTTP Ok (`200`)
     public static let ok = HTTPStatusCode(value: 200)
@@ -56,7 +56,7 @@ nonisolated public struct HTTPStatusCode: Hashable, Equatable, Sendable {
 
 // MARK: - CustomStringConvertible API
 
-nonisolated extension HTTPStatusCode: CustomStringConvertible {
+extension HTTPStatusCode: CustomStringConvertible {
 
     public var description: String {
         "\(value)"

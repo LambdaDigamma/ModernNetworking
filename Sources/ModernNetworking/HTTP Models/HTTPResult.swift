@@ -12,7 +12,7 @@ public typealias HTTPResult = Result<HTTPResponse, HTTPError>
 
 // MARK: - Convenience API
 
-nonisolated extension HTTPResult {
+extension HTTPResult {
 
     public var request: HTTPRequest {
         switch self {

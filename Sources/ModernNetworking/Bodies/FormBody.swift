@@ -8,7 +8,7 @@
 import Foundation
 
 
-nonisolated public struct FormBody: HTTPBody, Equatable {
+public struct FormBody: HTTPBody, Equatable {
     
     public var isEmpty: Bool { values.isEmpty }
     public let additionalHeaders = [
@@ -41,7 +41,7 @@ nonisolated public struct FormBody: HTTPBody, Equatable {
 
 }
 
-nonisolated extension FormBody {
+extension FormBody {
 
     private func urlEncode(_ string: String) -> String {
         string.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics) ?? ""

@@ -8,7 +8,7 @@
 import Foundation
 
 
-nonisolated public struct DataBody: HTTPBody, Equatable {
+public struct DataBody: HTTPBody, Equatable {
     
     private let data: Data
     

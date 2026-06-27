@@ -3,7 +3,6 @@
 import PackageDescription
 
 let settings: [SwiftSetting] = [
-    .defaultIsolation(MainActor.self),
     .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
     .enableUpcomingFeature("InferIsolatedConformances")
 ]

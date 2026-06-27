@@ -8,7 +8,7 @@
 import Foundation
 
 
-nonisolated public struct HTTPRequest: Equatable, Sendable {
+public struct HTTPRequest: Equatable, Sendable {
     
     public var method: HTTPMethod = .get
     public var headers: [String: String] = [:]
@@ -52,7 +52,7 @@ nonisolated public struct HTTPRequest: Equatable, Sendable {
 
 // MARK: - Convenience API
 
-nonisolated extension HTTPRequest {
+extension HTTPRequest {
 
     public var url: URL? {
         urlComponents.url

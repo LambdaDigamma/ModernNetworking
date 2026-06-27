@@ -8,7 +8,7 @@
 import Foundation
 
 
-nonisolated public struct HTTPError: Error, Equatable, Sendable {
+public struct HTTPError: Error, Equatable, Sendable {
     
     public let code: Code
     public let request: HTTPRequest
@@ -27,7 +27,7 @@ nonisolated public struct HTTPError: Error, Equatable, Sendable {
         self.underlyingError = underlyingError
     }
 
-    nonisolated public enum Code: Equatable, Sendable {
+    public enum Code: Equatable, Sendable {
         
         /// The HTTPRequest could not be turned into a URLRequest.
         case invalidRequest(InvalidRequest)
@@ -55,7 +55,7 @@ nonisolated public struct HTTPError: Error, Equatable, Sendable {
         case unknown
     }
 
-    nonisolated public enum InvalidRequest: Equatable, Sendable {
+    public enum InvalidRequest: Equatable, Sendable {
         case invalidURL
         case invalidBody
         case unknown
