@@ -8,7 +8,7 @@
 import Foundation
 
 
-public protocol HTTPRequestOption {
+nonisolated public protocol HTTPRequestOption {
 
     associatedtype Value: Sendable
 

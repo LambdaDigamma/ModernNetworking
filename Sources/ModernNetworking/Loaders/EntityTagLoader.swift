@@ -8,7 +8,7 @@
 import Foundation
 import OSLog
 
-public protocol EntityTagCaching: Sendable {
+nonisolated public protocol EntityTagCaching: Sendable {
     func store(entityTag: String, for url: URL) async
     func loadEntityTag(for url: URL) async -> String?
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 open class HTTPLoader {
 
     public var nextLoader: HTTPLoader? {

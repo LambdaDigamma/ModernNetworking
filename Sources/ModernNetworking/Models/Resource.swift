@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct Resource<T: Model>: Codable {
+nonisolated public struct Resource<T: Model>: Codable {
     
     public let data: T
     
@@ -18,7 +18,7 @@ public struct Resource<T: Model>: Codable {
     
 }
 
-extension Resource: Model {
+nonisolated extension Resource: Model {
     public static var decoder: JSONDecoder { T.decoder }
     public static var encoder: JSONEncoder { T.encoder }
 }

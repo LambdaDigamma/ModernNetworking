@@ -2,6 +2,12 @@
 
 import PackageDescription
 
+let settings: [SwiftSetting] = [
+    .defaultIsolation(MainActor.self),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("InferIsolatedConformances")
+]
+
 let package = Package(
     name: "ModernNetworking",
     platforms: [.iOS(.v14), .tvOS(.v13), .macOS(.v12), .watchOS(.v7)],
@@ -16,11 +22,13 @@ let package = Package(
         .target(
             name: "ModernNetworking",
             dependencies: [
-            ]
+            ],
+            swiftSettings: settings
         ),
         .testTarget(
             name: "ModernNetworkingTests",
-            dependencies: ["ModernNetworking"]
+            dependencies: ["ModernNetworking"],
+            swiftSettings: settings
         ),
     ]
 )

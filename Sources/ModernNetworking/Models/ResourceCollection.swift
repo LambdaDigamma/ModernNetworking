@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ResourceCollection<T: Model>: Codable {
+nonisolated public struct ResourceCollection<T: Model>: Codable {
     
     public let data: [T]
     public let links: ResourceLinks?
@@ -28,7 +28,7 @@ public struct ResourceCollection<T: Model>: Codable {
     
 }
 
-public struct ResourceLinks: Codable {
+nonisolated public struct ResourceLinks: Codable {
     
     public let first: String?
     public let last: String?
@@ -51,7 +51,7 @@ public struct ResourceLinks: Codable {
     
 }
 
-public struct ResourceMeta: Codable {
+nonisolated public struct ResourceMeta: Codable {
     
     public let currentPage: Int?
     public let from: Int?
@@ -95,13 +95,13 @@ public struct ResourceMeta: Codable {
     
 }
 
-public struct PageLink: Codable {
+nonisolated public struct PageLink: Codable {
     public let url: String?
 //    public let label: Int
     public let active: Bool
 }
 
-extension ResourceCollection: Model {
+nonisolated extension ResourceCollection: Model {
     public static var decoder: JSONDecoder { T.decoder }
     public static var encoder: JSONEncoder { T.encoder }
 }

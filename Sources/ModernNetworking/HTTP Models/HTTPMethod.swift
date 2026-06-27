@@ -11,7 +11,7 @@ import Foundation
 /// The HTTP spec does not define the allowed HTTP methods.
 /// Technically this could be any verb.
 /// The most common methods are defined as static members.
-public struct HTTPMethod: Hashable, Equatable, Sendable {
+nonisolated public struct HTTPMethod: Hashable, Equatable, Sendable {
 
     /// Represents a `GET` HTTP request.
     public static let get = HTTPMethod("GET")
@@ -38,7 +38,7 @@ public struct HTTPMethod: Hashable, Equatable, Sendable {
 
 // MARK: - CustomStringConvertible API
 
-extension HTTPMethod: CustomStringConvertible {
+nonisolated extension HTTPMethod: CustomStringConvertible {
 
     public var description: String {
         name

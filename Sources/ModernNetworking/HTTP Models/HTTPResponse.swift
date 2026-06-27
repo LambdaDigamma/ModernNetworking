@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct HTTPResponse: Equatable, Sendable {
+nonisolated public struct HTTPResponse: Equatable, Sendable {
 
     public let request: HTTPRequest
     public let body: Data?
@@ -33,7 +33,7 @@ public struct HTTPResponse: Equatable, Sendable {
 
 // MARK: - Convenience API
 
-extension HTTPResponse {
+nonisolated extension HTTPResponse {
 
     public var statusCode: HTTPStatusCode {
         HTTPStatusCode(value: response.statusCode)

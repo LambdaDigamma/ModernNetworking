@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct JSONBody<T: Encodable & Sendable>: HTTPBody {
+nonisolated public struct JSONBody<T: Encodable & Sendable>: HTTPBody {
     
     public let isEmpty: Bool = false
     public var additionalHeaders = [

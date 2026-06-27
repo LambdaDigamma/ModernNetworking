@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct EmptyBody: HTTPBody, Equatable {
+nonisolated public struct EmptyBody: HTTPBody, Equatable {
 
     public let isEmpty = true
 

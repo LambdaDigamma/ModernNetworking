@@ -8,7 +8,7 @@
 import Foundation
 
 
-public protocol HTTPBody: Sendable {
+nonisolated public protocol HTTPBody: Sendable {
 
     var isEmpty: Bool { get }
     var additionalHeaders: [String: String] { get }
@@ -17,7 +17,7 @@ public protocol HTTPBody: Sendable {
 
 }
 
-extension HTTPBody {
+nonisolated extension HTTPBody {
 
     public var isEmpty: Bool {
         false
